@@ -11,7 +11,6 @@ import glob
 import shutil
 from PIL import Image
 from sklearn.metrics import roc_auc_score
-from torch import nn
 import pytorch_lightning as pl
 from sklearn.metrics import confusion_matrix
 import pickle
@@ -60,7 +59,6 @@ class NN():
         return self.train_label[labels]
 
 class KNN(NN):
-
     def __init__(self, X=None, Y=None, k=3, p=2):
         self.k = k
         super().__init__(X, Y, p)
@@ -120,7 +118,6 @@ def embedding_concat(x, y):
         z[:, :, i, :, :] = torch.cat((x[:, :, i, :, :], y), 1)
     z = z.view(B, -1, H2 * W2)
     z = F.fold(z, kernel_size=s, output_size=(H1, W1), stride=s)
-
     return z
 
 def reshape_embedding(embedding):
@@ -257,8 +254,8 @@ class STPM(pl.LightningModule):
 
         self.data_transforms = transforms.Compose([
                         transforms.Resize((args.load_size, args.load_size), Image.ANTIALIAS),
-                        transforms.ToTensor(),
                         transforms.CenterCrop(args.input_size),
+                        transforms.ToTensor(),
                         transforms.Normalize(mean=mean_train,
                                             std=std_train)])
         self.gt_transforms = transforms.Compose([
@@ -430,7 +427,6 @@ if __name__ == '__main__':
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args = get_args()
-    
     trainer = pl.Trainer.from_argparse_args(args, default_root_dir=os.path.join(args.project_root_path, args.category), max_epochs=args.num_epochs, gpus=1) #, check_val_every_n_epoch=args.val_freq,  num_sanity_val_steps=0) # ,fast_dev_run=True)
     model = STPM(hparams=args)
     if args.phase == 'train':
